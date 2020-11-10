@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spline")
 		void Spawn(TSubclassOf<AActor> Class, float Alpha);
 
+	UFUNCTION(BlueprintCallable, Category = "Spline")
+		void SpawnMany(TSubclassOf<AActor> Class, float Alpha, int32 NumToSpawn, float TimeBetweenSpawns);
+
 private:
 
 	const float RayCastUpDist = 500.0f;

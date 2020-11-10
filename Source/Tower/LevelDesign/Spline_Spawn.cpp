@@ -72,3 +72,22 @@ void ASpline_Spawn::Spawn(TSubclassOf<AActor> Class, float Alpha)
 		SplineFollower->Init(this, Alpha, ZOffset);
 	}
 }
+
+void ASpline_Spawn::SpawnMany(TSubclassOf<AActor> Class, float Alpha, int32 NumToSpawn, float TimeBetweenSpawns)
+{
+	for (int i = 0; i < NumToSpawn; ++i)
+	{
+		float SpawnTime = TimeBetweenSpawns * (float)i;
+		if (SpawnTime > 0.0f)
+		{
+			FTimerHandle Handle;
+			FTimerDelegate Del;
+			Del.BindUFunction(this, FName("Spawn"), Class, Alpha);
+			GetWorldTimerManager().SetTimer(Handle, Del, SpawnTime, false);
+		}
+		else
+		{
+			Spawn(Class, Alpha);
+		}
+	}
+}
