@@ -8,3 +8,8 @@ ASpline::ASpline()
 
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 }
+
+USplineComponent* ASpline::GetSpline() const
+{
+	return Spline;
+}

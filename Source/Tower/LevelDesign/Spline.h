@@ -15,6 +15,9 @@ public:
 
 	ASpline();
 
+	UFUNCTION(BlueprintPure)
+		USplineComponent* GetSpline() const;
+
 protected:
 
 	UPROPERTY()

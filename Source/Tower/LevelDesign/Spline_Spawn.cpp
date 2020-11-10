@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Spline_Spawn.h"
 #include "Components/SplineComponent.h"
+#include "../ActorComponents/SplineFollower.h"
 
 void ASpline_Spawn::Spawn(TSubclassOf<AActor> Class, float Alpha)
 {
@@ -17,12 +18,10 @@ void ASpline_Spawn::Spawn(TSubclassOf<AActor> Class, float Alpha)
 		return;
 	}
 
-	float TotalSplineLength = Spline->GetSplineLength();
-	float TartgetSplineDistance = TotalSplineLength * FMath::Clamp(Alpha, 0.0f, 1.0f);
-
-	FVector Location = Spline->GetWorldLocationAtDistanceAlongSpline(TartgetSplineDistance);
-	FVector Tangent = Spline->GetWorldTangentAtDistanceAlongSpline(TartgetSplineDistance);
-	FRotator Rotation = Tangent.Rotation();
+	FVector Location;
+	FRotator Rotation;
+	USplineFollower::GetLocationAndRotationForAlpha(Spline, Alpha, Location, Rotation);
+	float OriginalSplineZ = Location.Z;
 
 	if (bRaycastToGround)
 	{
@@ -60,8 +59,16 @@ void ASpline_Spawn::Spawn(TSubclassOf<AActor> Class, float Alpha)
 
 			FVector TargetPos = Hit.Location + (FVector::UpVector * MoveDistUp);
 
-
 			SpawnedActor->SetActorLocation(TargetPos, false, nullptr, ETeleportType::ResetPhysics);
 		}
+	}
+
+	float ZOffset = SpawnedActor->GetActorLocation().Z - OriginalSplineZ;
+
+	TArray<USplineFollower*> SplineFollowers;
+	SpawnedActor->GetComponents<USplineFollower>(SplineFollowers);
+	for (auto SplineFollower : SplineFollowers)
+	{
+		SplineFollower->Init(this, Alpha, ZOffset);
 	}
 }
